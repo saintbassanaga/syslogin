@@ -1,6 +1,10 @@
 package tech.saintbassanaga.authapi.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +14,9 @@ import java.util.*;
 
 @Entity(name = "User")
 @Table(name = "users")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     // ---------------------------- Entity attributes declarations ----------------------------------->
@@ -20,7 +27,7 @@ public class User implements UserDetails {
     private UUID iD;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "surname", nullable = true)
+    @Column(name = "surname")
     private String surname;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -30,7 +37,7 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "bornYear", nullable = true)
+    @Column(name = "born_Year")
     private Date burnYear;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -50,26 +57,6 @@ public class User implements UserDetails {
     // ----------------------------- Getter, Setter and Constructor -------------------------->
 
 
-    public UUID getiD() {
-        return iD;
-    }
-
-    public void setiD(UUID iD) {
-        this.iD = iD;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Instant getJoinDate() {
-        return joinDate;
-    }
-
     public User(UUID iD, String name, String surname, String username, String email, String password, Date burnYear, Locations locations, Instant joinDate, long phoneNumber) {
         this.iD = iD;
         this.name = name;
@@ -87,17 +74,12 @@ public class User implements UserDetails {
         this.joinDate = joinDate;
     }
 
-    public String getSurname() {
-        return surname;
-    }
+
 
     public void setSurname(String surname) {
         this.surname = surname;
     }
 
-    public String getUsername() {
-        return username;
-    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -130,26 +112,27 @@ public class User implements UserDetails {
         return Collections.singletonList(authority) ;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public Date getBurnYear() {
-        return burnYear;
-    }
 
     public void setBurnYear(Date burnYear) {
         this.burnYear = burnYear;
     }
 
 
-    public long getPhoneNumber() {
-        return phoneNumber;
-    }
 
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
@@ -158,18 +141,13 @@ public class User implements UserDetails {
     @Column(name = "phone_number", nullable = false, unique = true, length = 12)
     private long phoneNumber;
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
     }
 
 
-    public Locations getLocations() {
-        return locations;
-    }
+
 
     public void setLocations(Locations locations) {
         this.locations = locations;
@@ -198,9 +176,6 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
     @Override
     public boolean equals(Object o) {
