@@ -1,15 +1,16 @@
 package tech.saintbassanaga.authapi.models;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity(name = "User")
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     // ---------------------------- Entity attributes declarations ----------------------------------->
 
@@ -37,6 +38,11 @@ public class User {
     private Locations locations;
     @Column(name = "join_date", nullable = false)
     private Instant joinDate;
+
+    private Boolean locked;
+    private Boolean enabled;
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 
 
     //--------------------------- End of Declaration ----------------------------------------->
@@ -93,8 +99,35 @@ public class User {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !locked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        SimpleGrantedAuthority authority =
+                new SimpleGrantedAuthority(userRole.name());
+        return Collections.singletonList(authority) ;
     }
 
     public String getPassword() {
@@ -125,6 +158,14 @@ public class User {
     @Column(name = "phone_number", nullable = false, unique = true, length = 12)
     private long phoneNumber;
 
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
 
     public Locations getLocations() {
         return locations;
@@ -132,14 +173,6 @@ public class User {
 
     public void setLocations(Locations locations) {
         this.locations = locations;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return phoneNumber == user.phoneNumber && Objects.equals(iD, user.iD) && Objects.equals(name, user.name) && Objects.equals(surname, user.surname) && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(burnYear, user.burnYear) && Objects.equals(locations, user.locations);
     }
 
     @Override
@@ -154,13 +187,11 @@ public class User {
                 ", burnYear=" + burnYear +
                 ", locations=" + locations +
                 ", joinDate=" + joinDate +
+                ", locked=" + locked +
+                ", enabled=" + enabled +
+                ", userRole=" + userRole +
                 ", phoneNumber=" + phoneNumber +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(iD, name, surname, username, email, password, burnYear, phoneNumber, locations);
     }
 
     public void setEmail(String email) {
@@ -171,5 +202,16 @@ public class User {
         return email;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return phoneNumber == user.phoneNumber && Objects.equals(iD, user.iD) && Objects.equals(name, user.name) && Objects.equals(surname, user.surname) && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(burnYear, user.burnYear) && Objects.equals(locations, user.locations) && Objects.equals(joinDate, user.joinDate) && Objects.equals(locked, user.locked) && Objects.equals(enabled, user.enabled) && userRole == user.userRole;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(iD, name, surname, username, email, password, burnYear, locations, joinDate, locked, enabled, userRole, phoneNumber);
+    }
 }
