@@ -43,7 +43,7 @@ public class User implements UserDetails {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "locations_id")
     private Locations locations;
-    @Column(name = "join_date", nullable = false)
+    @Column(name = "join_date")
     private Instant joinDate;
 
     private Boolean locked;
